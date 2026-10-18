@@ -24,7 +24,7 @@
   {% if inv.status != 'paid' %}
   <div class="row" style="margin-top:20px">
     {% if inv.paypal_approve_url %}
-      <a class="btn good" href="{{ inv.paypal_approve_url }}" target="_blank" rel="noopener">Open PayPal payment link</a>
+      <a class="btn good" href="{{ inv.paypal_approve_url }}">Open PayPal payment link</a>
     {% else %}
       <form action="/invoices/{{ inv.id }}/paypal" method="post">
         <button class="btn" type="submit">Create PayPal payment link</button>
