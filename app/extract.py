@@ -34,14 +34,42 @@ def _post_chat(messages: list[dict], temperature: float = 0.0) -> str | None:
     if not (BASE_URL and API_KEY):
         return None
     try:
-        r = httpx.post(
+        # The configured gateway requires streaming, so consume SSE deltas
+        # rather than a single JSON body.
+        payload = {
+            "model": MODEL,
+            "messages": messages,
+            "temperature": temperature,
+            "stream": True,
+        }
+        parts: list[str] = []
+        with httpx.stream(
+            "POST",
             f"{BASE_URL}/chat/completions",
             headers={"Authorization": f"Bearer {API_KEY}", "Content-Type": "application/json"},
-            json={"model": MODEL, "messages": messages, "temperature": temperature},
+            json=payload,
             timeout=TIMEOUT,
-        )
-        r.raise_for_status()
-        return r.json()["choices"][0]["message"]["content"]
+        ) as r:
+            r.raise_for_status()
+            for line in r.iter_lines():
+                if not line.startswith("data:"):
+                    continue
+                data = line[5:].strip()
+                if data == "[DONE]":
+                    break
+                try:
+                    chunk = json.loads(data)
+                except json.JSONDecodeError:
+                    continue
+                choices = chunk.get("choices") or []
+                if not choices:
+                    continue
+                delta = choices[0].get("delta") or {}
+                piece = delta.get("content")
+                if piece:
+                    parts.append(piece)
+        text = "".join(parts).strip()
+        return text or None
     except Exception:
         return None
 

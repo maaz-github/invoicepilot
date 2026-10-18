@@ -16,8 +16,17 @@ Due: 2026-11-02"></textarea>
   <input type="file" id="file" name="file" accept=".pdf,.txt">
 
   <div class="row" style="margin-top:18px">
-    <button class="btn" type="submit">Extract with AI →</button>
-    <span class="muted">Works with any OpenAI-compatible model; falls back to deterministic parsing offline.</span>
+    <button class="btn" type="submit" id="go">Extract with AI →</button>
+    <span class="muted" id="hint">Works with any OpenAI-compatible model; falls back to deterministic parsing offline.</span>
   </div>
 </form>
+
+<script>
+  document.querySelector("form").addEventListener("submit", function () {
+    var b = document.getElementById("go");
+    b.disabled = true;
+    b.textContent = "Reading the invoice…";
+    document.getElementById("hint").textContent = "The model is extracting vendor, total and due date.";
+  });
+</script>
 {% endblock %}
