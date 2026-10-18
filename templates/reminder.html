@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Reminder · InvoicePilot{% endblock %}
+{% block content %}
+<h1>Draft reminder</h1>
+<p class="sub">Written by <strong>{{ engine }}</strong> for {{ inv.vendor }} · {{ inv.amount_cents | money(inv.currency) }}</p>
+
+<div class="panel">
+  <pre class="msg" id="draft">{{ message }}</pre>
+  <div class="row" style="margin-top:16px">
+    <button class="btn" onclick="navigator.clipboard.writeText(document.getElementById('draft').innerText); this.textContent='Copied ✓'">Copy message</button>
+    <a class="btn ghost" href="/invoices/{{ inv.id }}">Back to invoice</a>
+  </div>
+</div>
+{% endblock %}

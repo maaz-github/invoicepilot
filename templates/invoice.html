@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Invoice {{ inv.id }} · InvoicePilot{% endblock %}
+{% block content %}
+<h1>{{ inv.vendor }}</h1>
+<p class="sub">
+  {% if inv.status == 'paid' %}<span class="badge paid">paid</span>
+  {% elif inv.due_date and inv.due_date < today %}<span class="badge overdue">overdue</span>
+  {% elif inv.status == 'sent' %}<span class="badge sent">sent</span>
+  {% else %}<span class="badge draft">draft</span>{% endif %}
+  {% if inv.invoice_number %}<span class="muted mono"> · {{ inv.invoice_number }}</span>{% endif %}
+</p>
+
+<div class="panel">
+  <div class="kv">
+    <div>Amount</div><div><strong>{{ inv.amount_cents | money(inv.currency) }}</strong></div>
+    <div>Due date</div><div>{{ inv.due_date or "—" }}</div>
+    <div>Created</div><div class="muted">{{ inv.created_at }}</div>
+    <div>Paid at</div><div>{{ inv.paid_at or "—" }}</div>
+    {% if inv.paypal_invoice_id %}
+    <div>PayPal ID</div><div class="mono">{{ inv.paypal_invoice_id }}</div>
+    {% endif %}
+  </div>
+
+  {% if inv.status != 'paid' %}
+  <div class="row" style="margin-top:20px">
+    {% if inv.paypal_approve_url %}
+      <a class="btn good" href="{{ inv.paypal_approve_url }}" target="_blank" rel="noopener">Open PayPal payment link</a>
+    {% else %}
+      <form action="/invoices/{{ inv.id }}/paypal" method="post">
+        <button class="btn" type="submit">Create PayPal payment link</button>
+      </form>
+    {% endif %}
+    <form action="/invoices/{{ inv.id }}/remind" method="post" class="row">
+      <select name="tone">
+        <option value="friendly">Friendly reminder</option>
+        <option value="firm">Firm reminder</option>
+        <option value="final">Final notice</option>
+      </select>
+      <button class="btn ghost" type="submit">Draft reminder with AI</button>
+    </form>
+  </div>
+  {% else %}
+  <p class="muted" style="margin-top:16px">Settled — nothing left to collect.</p>
+  {% endif %}
+</div>
+
+<h2>Activity</h2>
+<div class="panel">
+  <ul class="timeline">
+    {% for e in events %}
+    <li><span><strong>{{ e.kind }}</strong>{% if e.detail %} <span class="muted">· {{ e.detail }}</span>{% endif %}</span><span class="muted mono">{{ e.created_at }}</span></li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}New invoice · InvoicePilot{% endblock %}
+{% block content %}
+<h1>New invoice</h1>
+<p class="sub">Paste the invoice text (or upload a PDF). AI extracts the fields; you confirm before anything is created.</p>
+
+<form class="panel" action="/invoices/extract" method="post" enctype="multipart/form-data">
+  <label for="text">Invoice text</label>
+  <textarea id="text" name="text" placeholder="Acme Studio Sdn Bhd
+Invoice INV-2026-014
+Design retainer — October 2026
+Total: USD 2,450.00
+Due: 2026-11-02"></textarea>
+
+  <label for="file">…or upload a PDF / TXT</label>
+  <input type="file" id="file" name="file" accept=".pdf,.txt">
+
+  <div class="row" style="margin-top:18px">
+    <button class="btn" type="submit">Extract with AI →</button>
+    <span class="muted">Works with any OpenAI-compatible model; falls back to deterministic parsing offline.</span>
+  </div>
+</form>
+{% endblock %}

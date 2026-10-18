@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Pay · InvoicePilot{% endblock %}
+{% block content %}
+<h1>Checkout</h1>
+<p class="sub">This is the local mock checkout used when no PayPal credentials are configured. With sandbox keys, this page is replaced by the real PayPal approval link.</p>
+
+<div class="panel" style="max-width:520px">
+  <div class="kv">
+    <div>Payee</div><div>{{ inv.vendor }}</div>
+    <div>Invoice</div><div class="mono">{{ inv.invoice_number or inv.id }}</div>
+    <div>Amount</div><div><strong>{{ inv.amount_cents | money(inv.currency) }}</strong></div>
+  </div>
+  <form action="/mock/pay/{{ inv.id }}" method="post" style="margin-top:22px">
+    <button class="btn good" type="submit">Pay {{ inv.amount_cents | money(inv.currency) }}</button>
+  </form>
+</div>
+{% endblock %}

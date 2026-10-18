@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Confirm invoice · InvoicePilot{% endblock %}
+{% block content %}
+<h1>Confirm the details</h1>
+<p class="sub">Extracted with <strong>{{ engine }}</strong>. Edit anything that looks off, then create the invoice.</p>
+
+<form class="panel" action="/invoices" method="post">
+  <div class="grid2">
+    <div>
+      <label for="vendor">Vendor / client</label>
+      <input id="vendor" type="text" name="vendor" value="{{ f.vendor }}" required>
+    </div>
+    <div>
+      <label for="invoice_number">Invoice number</label>
+      <input id="invoice_number" type="text" name="invoice_number" value="{{ f.invoice_number or '' }}">
+    </div>
+    <div>
+      <label for="amount">Amount</label>
+      <input id="amount" type="text" name="amount" value="{{ '%.2f'|format(f.amount_cents / 100) }}" required>
+    </div>
+    <div>
+      <label for="currency">Currency</label>
+      <input id="currency" type="text" name="currency" value="{{ f.currency }}" maxlength="3">
+    </div>
+    <div>
+      <label for="due_date">Due date</label>
+      <input id="due_date" type="date" name="due_date" value="{{ f.due_date or '' }}">
+    </div>
+    <div>
+      <label for="notes">Note</label>
+      <input id="notes" type="text" name="notes" value="{{ f.notes or '' }}">
+    </div>
+  </div>
+
+  <input type="hidden" name="source_text" value="{{ source }}">
+  <div class="row" style="margin-top:20px">
+    <button class="btn" type="submit">Create invoice</button>
+    <a class="btn ghost" href="/invoices/new">Back</a>
+  </div>
+</form>
+
+<h2>Source text</h2>
+<pre class="msg">{{ source }}</pre>
+{% endblock %}

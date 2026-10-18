@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · InvoicePilot{% endblock %}
+{% block content %}
+<h1>Accounts receivable, on autopilot</h1>
+<p class="sub">Paste an invoice, let AI read it, and collect through PayPal — reminders included.</p>
+
+<div class="cards">
+  <div class="card">
+    <div class="label">Outstanding</div>
+    <div class="value">{{ stats.outstanding | money }}</div>
+  </div>
+  <div class="card bad">
+    <div class="label">Overdue</div>
+    <div class="value">{{ stats.overdue | money }}</div>
+  </div>
+  <div class="card good">
+    <div class="label">Collected</div>
+    <div class="value">{{ stats.paid | money }}</div>
+  </div>
+  <div class="card">
+    <div class="label">Invoices</div>
+    <div class="value">{{ stats.count }}</div>
+  </div>
+</div>
+
+<h2>Invoices</h2>
+{% if invoices %}
+<table>
+  <thead>
+    <tr><th>#</th><th>Vendor</th><th>Due</th><th>Amount</th><th>Status</th><th></th></tr>
+  </thead>
+  <tbody>
+  {% for inv in invoices %}
+    <tr>
+      <td class="mono">{{ inv.id }}</td>
+      <td><strong>{{ inv.vendor }}</strong>{% if inv.invoice_number %} <span class="muted mono">· {{ inv.invoice_number }}</span>{% endif %}</td>
+      <td>{{ inv.due_date or "—" }}</td>
+      <td>{{ inv.amount_cents | money(inv.currency) }}</td>
+      <td>
+        {% if inv.status == 'paid' %}<span class="badge paid">paid</span>
+        {% elif inv.due_date and inv.due_date < today %}<span class="badge overdue">overdue</span>
+        {% elif inv.status == 'sent' %}<span class="badge sent">sent</span>
+        {% else %}<span class="badge draft">draft</span>{% endif %}
+      </td>
+      <td><a href="/invoices/{{ inv.id }}">Open →</a></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="panel">
+  <p class="muted">No invoices yet. Start by pasting one — the AI will pull out the vendor, amount and due date.</p>
+  <a class="btn" href="/invoices/new">Create the first invoice</a>
+</div>
+{% endif %}
+{% endblock %}

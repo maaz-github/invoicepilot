@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}InvoicePilot{% endblock %}</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/">Invoice<span>Pilot</span></a>
+    <nav>
+      <a href="/">Dashboard</a>
+      <a class="btn small" href="/invoices/new">+ New invoice</a>
+    </nav>
+  </header>
+  <main class="wrap">
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="foot">
+    InvoicePilot · AI accounts receivable · PayPal {% if paypal_live is defined and paypal_live %}sandbox connected{% elif paypal_live is defined %}mock mode{% endif %}
+  </footer>
+</body>
+</html>
